@@ -18,7 +18,36 @@ public record DefinitionEvent(
         long waitWindowSeconds,
         long compositeWindowSeconds,
         long amountToleranceMinor,
-        boolean requireOppositeDirection) {
+        boolean requireOppositeDirection,
+        List<com.eternax.recon.domain.MatchingRule> rules) {
+
+    /** Form used before 1.2: no explicit rule list, so the default plan applies. */
+    public DefinitionEvent(
+            String definitionId,
+            String tenantId,
+            String name,
+            int version,
+            String status,
+            String rail,
+            List<String> requiredSources,
+            long waitWindowSeconds,
+            long compositeWindowSeconds,
+            long amountToleranceMinor,
+            boolean requireOppositeDirection) {
+        this(
+                definitionId,
+                tenantId,
+                name,
+                version,
+                status,
+                rail,
+                requiredSources,
+                waitWindowSeconds,
+                compositeWindowSeconds,
+                amountToleranceMinor,
+                requireOppositeDirection,
+                null);
+    }
 
     public String partitionKey() {
         return tenantId + "|" + definitionId;

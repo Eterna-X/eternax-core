@@ -10,6 +10,7 @@ public final class Topics {
     public static final String LATE_MATCHES = "eternax.late-matches.v1";
     public static final String CASE_EVENTS = "eternax.case-events.v1";
     public static final String ADJUSTMENT_EVENTS = "eternax.adjustment-events.v1";
+    public static final String RECORD_REJECTIONS = "eternax.record-rejections.v1";
     public static final String DEFINITIONS = "eternax.definitions.v1";
     public static final String CLOSURE_EVENTS = "eternax.closure-events.v1";
     public static final String AUDIT_EVENTS = "eternax.audit-events.v1";
