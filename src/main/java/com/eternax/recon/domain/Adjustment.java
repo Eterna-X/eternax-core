@@ -32,6 +32,8 @@ public final class Adjustment {
     private Optional<String> journalReference = Optional.empty();
     private AdjustmentStatus status = AdjustmentStatus.PROPOSED;
     private long version;
+    private Optional<String> rejectionReason = Optional.empty();
+    private boolean overBreak;
 
     public Adjustment(
             TypedId<AdjustmentMarker> adjustmentId,
@@ -71,6 +73,30 @@ public final class Adjustment {
         base.journalReference = journalReference;
         base.version = version;
         return base;
+    }
+
+    /** Restores the fields added in 1.2: rejection reason and the over-break override. */
+    public static Adjustment restore(
+            Adjustment base,
+            AdjustmentStatus status,
+            Optional<String> firstApprover,
+            Optional<String> secondApprover,
+            Optional<String> journalReference,
+            long version,
+            Optional<String> rejectionReason,
+            boolean overBreak) {
+        restore(base, status, firstApprover, secondApprover, journalReference, version);
+        base.rejectionReason = rejectionReason;
+        base.overBreak = overBreak;
+        return base;
+    }
+
+    /**
+     * The proposer asked for more than the break amount. Such an adjustment always needs a second
+     * approver, whatever its size.
+     */
+    public void markOverBreak() {
+        this.overBreak = true;
     }
 
     /**
@@ -122,6 +148,10 @@ public final class Adjustment {
     }
 
     public void reject(String actor) {
+        reject(actor, null);
+    }
+
+    public void reject(String actor, String reason) {
         if (status == AdjustmentStatus.POSTED
                 || status == AdjustmentStatus.CONFIRMED
                 || status == AdjustmentStatus.REJECTED) {
@@ -134,6 +164,7 @@ public final class Adjustment {
         }
         Objects.requireNonNull(actor);
         this.status = AdjustmentStatus.REJECTED;
+        this.rejectionReason = Optional.ofNullable(reason).filter(r -> !r.isBlank());
     }
 
     private void requireStatus(AdjustmentStatus expected, String action) {
@@ -197,6 +228,14 @@ public final class Adjustment {
 
     public AdjustmentStatus status() {
         return status;
+    }
+
+    public Optional<String> rejectionReason() {
+        return rejectionReason;
+    }
+
+    public boolean overBreak() {
+        return overBreak;
     }
 
     public long version() {
